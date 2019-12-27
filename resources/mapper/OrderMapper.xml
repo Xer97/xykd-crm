@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+		
+<mapper namespace="bootcrm.mapper.OrderMapper">
+
+	<sql id="field">id,customer_id,customer_name,pay_type,quantity,payment,pay_time,expiry_time,operator_id</sql>
+	
+	<select id="listWithPerCustomer" resultType="order" parameterType="orderQueryVO">
+		SELECT <include refid="field"/>
+		FROM `order`
+		WHERE id IN
+		(
+			SELECT MAX(id) FROM `order`
+			GROUP BY customer_id
+		)
+		<if test="customerId!=null">
+			AND customer_id=#{customerId}
+		</if>
+		<if test="customerName!=null">
+			AND customer_name LIKE concat("%",#{customerName},"%")
+		</if>
+		<if test="payType!=null">
+			AND pay_type=#{payType}
+		</if>
+		ORDER BY expiry_time
+	</select>
+	
+	<select id="getLastestByCustomerId" parameterType="integer" resultType="order">
+		SELECT <include refid="field"/>
+		FROM `order`
+		WHERE id IN (
+			SELECT MAX(id) FROM `order`
+			GROUP BY customer_id
+		)
+		AND customer_id=#{customerId}
+	</select>
+	
+	<select id="listByCustomerId" parameterType="integer" resultType="order">
+		SELECT <include refid="field"/>
+		FROM `order`
+		WHERE customer_id=#{customerId}
+	</select>
+	
+	<insert id="insert" parameterType="order">
+		INSERT INTO `order`(customer_id,customer_name,pay_type,quantity,payment,pay_time,expiry_time,operator_id)
+		VALUES(#{customerId},#{customerName},#{payType},#{quantity},#{payment},#{payTime},#{expiryTime},#{operatorId})
+	</insert>
+	
+	<select id="countOrderByCustomerId" parameterType="integer" resultType="integer">
+		SELECT count(*)
+		FROM `order`
+		WHERE customer_id=#{customerId}
+	</select>
+	
+	<select id="getSumPayment" parameterType="integer" resultType="bigDecimal">
+		SELECT SUM(payment)
+		FROM `order`
+		WHERE customer_id=#{customerId}
+	</select>
+
+
+</mapper>

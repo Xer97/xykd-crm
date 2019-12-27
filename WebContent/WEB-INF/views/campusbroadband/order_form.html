@@ -1,0 +1,113 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>layuiAdmin 角色管理 iframe 框</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <link rel="stylesheet" href="/boot-crm/layui/layui/css/layui.css" media="all">
+</head>
+<body>
+
+  <div class="layui-form" lay-filter="layuiadmin-form-role" id="layuiadmin-form-role" style="padding: 20px 30px 0 0;">
+  
+  	<div class="layui-form-item">
+      <label class="layui-form-label">客户ID</label>
+      <div class="layui-input-inline">
+        <input type="text" name="customerId" id="customerId" lay-verify="required" placeholder="请输入客户ID" autocomplete="off"  class="layui-input"/>
+      </div>
+      <button class="layui-btn layuiadmin-btn-admin" style="float: left;" lay-submit lay-filter="LAY-customer-search" id="LAY-customer-search">
+        <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+      </button>
+    </div>
+  	
+  	
+    <div class="layui-form-item">
+      <label class="layui-form-label">客户名</label>
+      <div class="layui-input-inline">
+        <input type="text" name="customerName" id="customerName" disabled autocomplete="off"  class="layui-input"/>
+      </div>
+     </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">宽带套餐</label>
+      <div class="layui-input-inline">
+        <select name="payType" id="payType" disabled>
+          <option value="">请选择</option>
+          <option value="0">包月</option>
+          <option value="1">包年</option>
+        </select>
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label" id="quantity_label">办理周期</label>
+      <div class="layui-input-inline">
+        <select name="quantity" id="quantity" disabled>
+          <option value="">请选择</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+        </select>
+      </div>
+    </div>
+    
+    <div class="layui-form-item layui-hide">
+      <button class="layui-btn" lay-submit lay-filter="LAY-order-submit" id="LAY-order-submit">提交</button>
+    </div>
+  </div>
+
+  <script src="/boot-crm/layui/layui/layui.js"></script>  
+  <script>
+  layui.config({
+    base: '/boot-crm/layui/' //静态资源所在路径
+  }).extend({
+    index: 'lib/index' //主入口模块
+  }).use(['index', 'form'], function(){
+    var $ = layui.$
+    ,form = layui.form;
+    
+    form.on('submit(LAY-customer-search)', function(data){
+    	var field = data.field;
+        //执行重载
+    	$.ajax({
+            type:'get',
+            url:'http://localhost:8080/boot-crm/order_manage/order/check_customer/'+field.customerId,
+            dataType:'json',
+            success: function (data) {
+                  if(data.status==0){
+	                  //请求成功
+	                  $('#LAY-customer-search').addClass('layui-hide');
+	                  $('#customerId').attr('disabled','');
+	                  $('#customerName').val(data.data.name);
+	                  $('#payType').val(data.data.level);
+	                  $('#quantity').removeAttr('disabled');
+	                  $('#customerName').attr('lay-verify','required');
+	                  $('#payType').attr('lay-verify','required');
+	                  $('#quantity').attr('lay-verify','required');
+	                  form.render();
+                      layer.msg(data.msg);
+                  }else{
+                	  layer.msg(data.msg,{
+                		  offset: '15px'
+                	      ,icon: 2
+                	      ,time: 2000
+                	  })
+                  }
+            },
+            error: function(data) {
+            	layer.msg('出错了！',{
+          		  offset: '15px'
+          	      ,icon: 2
+          	      ,time: 3000
+          	  })
+            }
+        });
+    });
+  })
+  </script>
+</body>
+</html>

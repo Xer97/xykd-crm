@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+		
+<mapper namespace="bootcrm.mapper.UserMapper">
+	
+	<sql id="field">id,logincode,username,password,type,status</sql>
+	
+	<select id="getByLoginTypeAndLogincode" resultType="user">
+		SELECT <include refid="field"/>
+		FROM sys_user
+		<where>
+			<if test="loginType!=null">
+				AND type=#{loginType}
+			</if>
+			<if test="logincode!=null">
+				AND logincode=#{logincode}
+			</if>
+		</where>  
+	</select>
+	
+	<select id="getByUsername" resultType="user" parameterType="string">
+		SELECT <include refid="field"/>
+		FROM sys_user
+		WHERE username=#{username}
+	</select>
+	
+	<select id="list" parameterType="userQueryVO" resultType="user">
+		SELECT <include refid="field"/>
+		FROM sys_user
+		<where>
+			<if test="id!=null">
+				AND id=#{id}
+			</if>
+			<if test="keyword!=null">
+				AND (logincode LIKE concat("%",#{keyword},"%") OR username LIKE concat("%",#{keyword},"%"))
+			</if>
+			<if test="type!=null">
+				AND type=#{type}
+			</if>
+			<if test="status!=null">
+				AND status=#{status}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getByUserId" resultType="user">
+		SELECT <include refid="field"/>
+		FROM sys_user
+		WHERE id=#{userId}
+	</select>
+	
+	<insert id="insert" parameterType="user">
+		INSERT INTO sys_user(logincode,username,password,type,status)
+		VALUES(#{logincode},#{username},#{password},#{type},#{status})
+	</insert>
+	
+	<update id="update" parameterType="user">
+		UPDATE sys_user
+		<set>
+			<if test="username!=null">
+				username=#{username},
+			</if>
+			<if test="password!=null">
+				password=#{password},
+			</if>
+			<if test="type!=null">
+				type=#{type},
+			</if>
+			<if test="status">
+				status=#{status},
+			</if>
+		</set>
+		WHERE id=#{id}
+	</update>
+	
+	<delete id="delete" parameterType="integer">
+		DELETE FROM sys_user
+		WHERE id=#{id}
+	</delete>
+	
+	<delete id="batchDelete" parameterType="list">
+		DELETE FROM sys_user
+		WHERE id IN
+		<foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
+			#{id}
+		</foreach>
+	</delete>
+	
+	<update id="updateStatus">
+		UPDATE sys_user
+		SET status=#{status}
+		WHERE id=#{id}
+	</update>
+
+</mapper>

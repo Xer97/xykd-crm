@@ -1,0 +1,40 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>layuiAdmin 角色管理</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <link rel="stylesheet" href="/boot-crm/layui/layui/css/layui.css" media="all">
+  <link rel="stylesheet" href="/boot-crm/layui/style/admin.css" media="all">
+</head>
+<body>
+		<input type="hidden" id="customerId" >
+		<br>&nbsp;&nbsp;&nbsp;&nbsp;总付款额：<b id="sumPayment" style="color:red;"></b> 元
+        <table id="LAY-order-history" lay-filter="LAY-order-history"></table>  
+        <script type="text/html" id="table-order-type">
+          {{d.payType==0 ? '包月' : '包年' }}
+        </script>
+        <script type="text/html" id="table-order-quantity">
+          {{d.quantity}}{{d.payType==0 ? '个月' : '年' }}
+        </script>
+
+ <script src="/boot-crm/layui/layui/layui.js"></script>  
+  <script>
+  layui.config({
+    base: '/boot-crm/layui/' //静态资源所在路径
+  }).extend({
+    index: 'lib/index' //主入口模块
+  }).use(['index', 'useradmin', 'table'], function(){
+    var $ = layui.$
+    ,form = layui.form
+    ,table = layui.table;
+    
+  });
+  </script>
+</body>
+</html>
+
